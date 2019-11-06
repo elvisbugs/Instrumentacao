@@ -1,4 +1,3 @@
-# -*- coding: latin-1 -*-
 import subprocess
 from threading import Thread 
 import window as wd
@@ -28,6 +27,3 @@ serverState = False
 window.addBtn("5x5", btnBroker, btnBrokerServer(serverState))
 
 window.exec()
-window.close()
-#objBroker = Broker()
-#objBroker.start()

@@ -17,6 +17,8 @@ class Window:
 
         windowPosition = str(self.x_size) + "x" + str(self.y_size) + "+" + str(self.x_size//2) + "+" + str(self.y_size//2)
         self.window.geometry(windowPosition)
+    def close(self):
+        self.window.sto
 
     def exec(self):
         self.window.mainloop()
@@ -26,7 +28,8 @@ class Window:
 
     def addBtn(self, pos, txtBtn, callback):
         btn = Button(self.window, text = txtBtn, command = callback)
-        btn.pack()
+        xy = pos.rsplit("x")
+        btn.place(x=int(xy[0]),y=int(xy[1]))
         self.widgetElements[txtBtn] = btn
 
     def getElement(self, element):
