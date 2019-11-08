@@ -3,30 +3,33 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 #include <user_interface.h>
+#include <math.h>
+
+// Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
 float instantMeasure = 0;
+float Vrms = 0;
 int h=0,m=0,s=0;
 void setup() {
-  //Debug purpose
-  Serial.begin(9600);
-  Serial.println("Started!");
-  //Debug purpose
   setupDisplay();
 }
 
 void loop(){
   timer();
   voltageMeasure();
-  //debug purpose
-  Serial.println(instantMeasure);
-  //debug purpose
   showOnDisplay();
-  delay(100);
+  Vrms = 0;
 }
 
 void voltageMeasure()
 {
-  instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
+  for(int i=0; i < 8; i++)
+  {
+    instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
+    Vrms += sqrt((instantMeasure * instantMeasure)/8);
+    delay(125);
+  }
+  
 }
 
 void timer()
@@ -69,7 +72,7 @@ void showOnDisplay()
   display.fillRect(0, 33, 84, 48, 2);
   display.setCursor(10,20);
   display.setTextSize(1);
-  display.print(instantMeasure);
+  display.print(Vrms);
   display.print(" dB(A)");
   
   display.setTextColor(WHITE,BLACK);
