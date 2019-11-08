@@ -7,9 +7,11 @@
 
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
-float instantMeasure = 0;
-float Vrms = 0;
-int h=0,m=0,s=0;
+double instantMeasure = 0;
+double Vrms = 0;
+int h = 0,m = 0,s = 0;
+double sAdjusted = 0;
+
 void setup() {
   setupDisplay();
 }
@@ -21,8 +23,7 @@ void loop(){
   Vrms = 0;
 }
 
-void voltageMeasure()
-{
+void voltageMeasure(){
   for(int i=0; i < 8; i++)
   {
     instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
@@ -32,13 +33,12 @@ void voltageMeasure()
   
 }
 
-void timer()
-{
-  if(s < 59)
-    s++;
+void timer(){
+  if(sAdjusted < 59)
+    sAdjusted += 1,0205450734;
   else
   {
-    s = 0;
+    sAdjusted = 0;
     if(m < 59)
       m++;
     else
@@ -50,10 +50,10 @@ void timer()
         h = 0;
     }
   }
+  s = round(sAdjusted);
 }
 
-void setupDisplay()
-{
+void setupDisplay(){
   display.begin();
   display.setContrast(48);
   display.clearDisplay();
@@ -61,8 +61,7 @@ void setupDisplay()
   display.setTextColor(BLACK);
 }
 
-void showOnDisplay()
-{
+void showOnDisplay(){
   display.clearDisplay();
 
   display.setTextColor(BLACK,WHITE);
