@@ -13,24 +13,36 @@ int h = 0,m = 0,s = 0;
 double sAdjusted = 0;
 
 void setup() {
+  Serial.begin(9600);
   setupDisplay();
 }
 
 void loop(){
   timer();
   voltageMeasure();
+  char test[10];
+  sprintf(test, "%.5f",Vrms);
+  Serial.println(test);
   showOnDisplay();
   Vrms = 0;
 }
 
 void voltageMeasure(){
-  for(int i=0; i < 8; i++)
+  double tst = 0;
+  for(int i=0; i < 1500; i++)
   {
     instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
-    Vrms += sqrt((instantMeasure * instantMeasure)/8);
-    delay(125);
+    tst = sqrt(pow(instantMeasure,2)); 
+    if(tst > Vrms)
+      Vrms = tst;  
+    delayMicroseconds(666);
   }
-  
+  double pow1 = pow(10,-11);
+  double mul = 1.147314*pow1;
+  double dem = pow(Vrms/(mul),0.6645585) + 1;
+  //double dem = 1 + pow((Vrms/1.147314*pow(10,-11)),0.6645585); 
+  Vrms = 92.6621 + (-100164800-92.6621) / dem;
+  //Vrms = Vrms /100;
 }
 
 void timer(){
