@@ -3,46 +3,50 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 #include <user_interface.h>
+#include <PubSubClient.h>
 #include <math.h>
+#define sub_topic "MNPS"
+#define pub_topic "Configs"
 
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
+
 double instantMeasure = 0;
 double Vrms = 0;
 int h = 0,m = 0,s = 0;
 double sAdjusted = 0;
 
 void setup() {
-  Serial.begin(9600);
+//  Serial.begin(9600);
   setupDisplay();
 }
 
 void loop(){
   timer();
   voltageMeasure();
-  char test[10];
-  sprintf(test, "%.5f",Vrms);
-  Serial.println(test);
+//  char test[10];
+//  sprintf(test, "%.5f",Vrms);
+//  Serial.println(test);
   showOnDisplay();
-  Vrms = 0;
 }
 
 void voltageMeasure(){
-  double tst = 0;
+  Vrms = 0;
   for(int i=0; i < 1500; i++)
   {
     instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
-    tst = sqrt(pow(instantMeasure,2)); 
-    if(tst > Vrms)
-      Vrms = tst;  
+    //instantMeasure = sqrt(pow(instantMeasure,2)); 
+    //if(instantMeasure > Vrms)
+      Vrms = instantMeasure;  
     delayMicroseconds(666);
   }
-  double pow1 = pow(10,-11);
-  double mul = 1.147314*pow1;
-  double dem = pow(Vrms/(mul),0.6645585) + 1;
+  //double pow1 = pow(10,-11);
+  //double mul = 1.147314*pow1;
+  //double dem = pow(Vrms/(mul),0.6645585) + 1;
   //double dem = 1 + pow((Vrms/1.147314*pow(10,-11)),0.6645585); 
-  Vrms = 92.6621 + (-100164800-92.6621) / dem;
+  //Vrms = 92.6621 + (-100164800-92.6621) / dem;
   //Vrms = Vrms /100;
+  //Vrms = 13.243 * log(Vrms) + 93.45;
 }
 
 void timer(){
@@ -62,7 +66,7 @@ void timer(){
         h = 0;
     }
   }
-  s = round(sAdjusted);
+  s = (int)sAdjusted;
 }
 
 void setupDisplay(){
