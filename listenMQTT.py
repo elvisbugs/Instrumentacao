@@ -1,21 +1,33 @@
 # -*- coding: latin-1 -*-
 import paho.mqtt.client as mqtt
+from threading import Thread
+from tkinter import *
+import datetime
 
-# The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, rc):
-   client.subscribe("MNPS/#")
+class MqttClient(Thread):
+    def __init__(self,widget):
+        Thread.__init__(self)
+        self.client = mqtt.Client()
+        self.client.on_connect = self.on_connect
+        self.client.on_message = self.on_message
+        self.client.connect("127.0.0.1", 1883, 60)
+        self.message = ""
+        self.widget = widget 
+        
+    def run(self):
+        self.client.loop_forever()
+    
+    def write(self,msg):
+        #crntTime = str(datetime.datetime.now().strftime('%H:%M:%S'))
+        self.widget.config(text= msg + " dB")
 
-# Callback responável por receber uma mensagem publicada no tópico acima
-def on_message(client, userdata, msg):
-    msg = str(msg.payload)
-    print(msg.topic+" -  "+str(msg.payload))
+    # The callback for when the client receives a CONNACK response from the server.
+    def on_connect(self,client, userdata, flags, rc):
+        self.client.subscribe("MNPS/#")
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-# Seta um usuário e senha para o Broker, se não tem, não use esta linha
-#client.username_pw_set("USUARIO", password="SENHA")
-# Conecta no MQTT Broker
-client.connect("127.0.0.1", 1883, 60)
-# Inicia o loop
-client.loop_forever()
+    # Callback responável por receber uma mensagem publicada no tópico acima
+    def on_message(self, client, userdata, msg):
+        msg = msg.payload
+        strMsg = msg.decode()
+        self.write(strMsg)
+        
