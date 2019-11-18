@@ -5,7 +5,7 @@ import listenMQTT as mqtt
 import webbrowser
 
 def grafanaBtn():
-    webbrowser.open('http://localhost:3000/d/evJbqpTWk/application?orgId=1&refresh=1s&from=now-12h&to=now-2s', new=2)
+    webbrowser.open('http://localhost:3000/d/w4UNZzxZk/application?orgId=1&refresh=1s', new=2)
     
 #start a new window with ico passed
 window = wd.Window("dbIcon.ico", "Sound Pressure Meter")

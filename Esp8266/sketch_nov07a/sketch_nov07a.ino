@@ -12,7 +12,7 @@ const char * pub_topic = "Configs"; //Topico onde o Device publica.
 //PODE SER CONFIGURADO POR SERIAL
 String ssid = "Elvis";
 String password = "angaroth";
-String MQTT_SERVER = "192.168.0.103"; //IP ou DNS do Broker MQTT
+String MQTT_SERVER = "192.168.0.104"; //IP ou DNS do Broker MQTT
 
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
