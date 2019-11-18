@@ -1,0 +1,116 @@
+{
+    "datasource": null,
+    "aliasColors": {},
+    "bars": true,
+    "dashLength": 10,
+    "dashes": false,
+    "fill": 1,
+    "fillGradient": 0,
+    "gridPos": {
+      "h": 8,
+      "w": 13,
+      "x": 0,
+      "y": 8
+    },
+    "id": 6,
+    "legend": {
+      "alignAsTable": false,
+      "avg": false,
+      "current": false,
+      "max": false,
+      "min": false,
+      "rightSide": false,
+      "show": false,
+      "total": false,
+      "values": false
+    },
+    "lines": false,
+    "linewidth": 1,
+    "nullPointMode": "null",
+    "options": {
+      "dataLinks": []
+    },
+    "percentage": false,
+    "pluginVersion": "6.4.3",
+    "pointradius": 2,
+    "points": false,
+    "renderer": "flot",
+    "seriesOverrides": [],
+    "spaceLength": 10,
+    "stack": false,
+    "steppedLine": false,
+    "targets": [
+      {
+        "format": "time_series",
+        "group": [],
+        "metricColumn": "none",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  UNIX_TIMESTAMP(time_) AS \"time\",\n  measure AS \"Sound Pressure\"\nFROM eventdata\nWHERE\n  $__timeFilter(time_)\nORDER BY time_",
+        "refId": "A",
+        "select": [
+          [
+            {
+              "params": [
+                "eventdata_id"
+              ],
+              "type": "column"
+            }
+          ]
+        ],
+        "table": "eventdata",
+        "timeColumn": "time_",
+        "timeColumnType": "timestamp",
+        "where": [
+          {
+            "name": "$__timeFilter",
+            "params": [],
+            "type": "macro"
+          }
+        ]
+      }
+    ],
+    "thresholds": [],
+    "timeFrom": null,
+    "timeRegions": [],
+    "timeShift": null,
+    "title": "Sound Pressure Level Histogram",
+    "tooltip": {
+      "shared": false,
+      "sort": 0,
+      "value_type": "individual"
+    },
+    "transparent": true,
+    "type": "graph",
+    "xaxis": {
+      "buckets": null,
+      "max": 100,
+      "min": 40,
+      "mode": "histogram",
+      "name": null,
+      "show": true,
+      "values": []
+    },
+    "yaxes": [
+      {
+        "decimals": null,
+        "format": "short",
+        "label": "",
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      },
+      {
+        "format": "dB",
+        "label": "",
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      }
+    ],
+    "yaxis": {
+      "align": false,
+      "alignLevel": null
+    }
+  }

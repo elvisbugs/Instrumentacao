@@ -1,0 +1,80 @@
+{
+    "datasource": null,
+    "gridPos": {
+      "h": 8,
+      "w": 11,
+      "x": 13,
+      "y": 8
+    },
+    "id": 4,
+    "options": {
+      "fieldOptions": {
+        "calcs": [
+          "last"
+        ],
+        "defaults": {
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 40,
+          "thresholds": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "#EAB839",
+              "value": 55
+            },
+            {
+              "color": "red",
+              "value": 85
+            }
+          ],
+          "unit": "dB"
+        },
+        "limit": 1,
+        "override": {},
+        "values": true
+      },
+      "orientation": "auto",
+      "showThresholdLabels": true,
+      "showThresholdMarkers": true
+    },
+    "pluginVersion": "6.4.3",
+    "targets": [
+      {
+        "format": "time_series",
+        "group": [],
+        "metricColumn": "none",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  time_ as \"time\",\n  measure AS \"measure\"\nFROM eventdata\norder by time desc\nlimit 1",
+        "refId": "A",
+        "select": [
+          [
+            {
+              "params": [
+                "eventdata_id"
+              ],
+              "type": "column"
+            }
+          ]
+        ],
+        "table": "eventdata",
+        "timeColumn": "time_",
+        "timeColumnType": "timestamp",
+        "where": [
+          {
+            "name": "$__timeFilter",
+            "params": [],
+            "type": "macro"
+          }
+        ]
+      }
+    ],
+    "timeFrom": null,
+    "timeShift": null,
+    "title": "Instant Sound Pressure Measure",
+    "transparent": true,
+    "type": "gauge"
+  }

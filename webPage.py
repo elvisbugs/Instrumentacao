@@ -36,8 +36,8 @@ class BrowserFrame(tk.Frame):
         window_info = cef.WindowInfo()
         rect = [self.xPos, self.yPos, self.width, self.height]
         window_info.SetAsChild(self.winfo_id(), rect)
-        self.browser = cef.CreateBrowserSync(window_info, url=self.url) #todo
-        assert self.browser
+        self.browser = cef.CreateBrowserSync(window_info, url=self.url)
+        #assert self.browser
         self.message_loop_work()
 
     def message_loop_work(self):
@@ -51,10 +51,10 @@ class BrowserFrame(tk.Frame):
 class WebPage:
     def __init__(self,window, position, size, dir, url):
         self.app = MainFrame(window, position, size, url)
-        # Tk must be initialized before CEF otherwise fatal error (Issue #306)
         settings = {
             "cache_path": dir + "\\cache\\"
         }
         cef.Initialize(settings = settings)
-        #self.app.mainloop()
-        #cef.Shutdown()
+
+    def close(self):
+        cef.Shutdown()

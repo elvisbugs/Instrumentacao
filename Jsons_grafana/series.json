@@ -1,0 +1,118 @@
+{
+    "datasource": null,
+    "aliasColors": {},
+    "bars": false,
+    "cacheTimeout": null,
+    "dashLength": 10,
+    "dashes": false,
+    "decimals": 2,
+    "fill": 1,
+    "fillGradient": 0,
+    "gridPos": {
+      "h": 8,
+      "w": 23,
+      "x": 0,
+      "y": 0
+    },
+    "hideTimeOverride": true,
+    "id": 2,
+    "interval": "2s",
+    "legend": {
+      "alignAsTable": false,
+      "avg": false,
+      "current": false,
+      "max": false,
+      "min": false,
+      "rightSide": false,
+      "show": true,
+      "total": false,
+      "values": false
+    },
+    "lines": true,
+    "linewidth": 1,
+    "links": [],
+    "nullPointMode": "null",
+    "options": {
+      "dataLinks": []
+    },
+    "percentage": false,
+    "pluginVersion": "6.4.3",
+    "pointradius": 2,
+    "points": false,
+    "renderer": "flot",
+    "seriesOverrides": [],
+    "spaceLength": 10,
+    "stack": false,
+    "steppedLine": false,
+    "targets": [
+      {
+        "format": "time_series",
+        "group": [],
+        "metricColumn": "none",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  UNIX_TIMESTAMP(time_) AS \"time\",\n  measure AS \"Sound Pressure\"\nFROM eventdata\nWHERE\n  $__timeFilter(time_)\nORDER BY time_",
+        "refId": "A",
+        "select": [
+          [
+            {
+              "params": [
+                "measure"
+              ],
+              "type": "column"
+            }
+          ]
+        ],
+        "table": "eventdata",
+        "timeColumn": "time_",
+        "timeColumnType": "timestamp",
+        "where": [
+          {
+            "name": "$__timeFilter",
+            "params": [],
+            "type": "macro"
+          }
+        ]
+      }
+    ],
+    "thresholds": [],
+    "timeFrom": "90s",
+    "timeRegions": [],
+    "timeShift": null,
+    "title": "Sound Pressure Level Time Serie",
+    "tooltip": {
+      "shared": true,
+      "sort": 0,
+      "value_type": "individual"
+    },
+    "transparent": true,
+    "type": "graph",
+    "xaxis": {
+      "buckets": null,
+      "mode": "time",
+      "name": null,
+      "show": true,
+      "values": []
+    },
+    "yaxes": [
+      {
+        "format": "dB",
+        "label": null,
+        "logBase": 1,
+        "max": "100",
+        "min": "40",
+        "show": true
+      },
+      {
+        "format": "dB",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      }
+    ],
+    "yaxis": {
+      "align": false,
+      "alignLevel": null
+    }
+  }

@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import font
 import tkinter.scrolledtext as scrolledtext
+from tkinter import ttk
 import psutil
 import subprocess
 import os
@@ -11,33 +12,59 @@ class Window:
     def __init__(self, icon, title):
         #destroy any mqtt broker if exists
         self.stopBroker(True)
+
+        self.meter = None
         self.proc = None
+
         self.window = Tk()
         self.window.title(title)
+        self.window.resizable(0,0)
+
         self.window.iconbitmap(default=icon)
+
+        #width and height window
+        self.wdWidth = self.window.winfo_screenwidth()
+        self.wdHeight = self.window.winfo_screenheight()
+
         self.bg = '#161719'
-        self.window.configure(background=self.bg)
-        self.setWindow()
-        self.actualDir = os.getcwd() + "\\mosquitto\\mosquitto\\"
         self.font = 'Verdana 10 bold'
+
+        self.window.configure(background=self.bg)
+
+        self.setWindow()
+
+        self.actualDir = os.getcwd() + "\\mosquitto\\mosquitto\\"
+        
         #start a new mqtt broker
         self.runBroker()
-        url = 'http://localhost:3000/d/Y_l0I91Zz/db?orgId=1&kiosk'
-        self.wp = wp.WebPage(self.window,'5;5','350;350',os.getcwd(),url)
+    
+    def getWindowSize(self):
+        return self.wdWidth, self.wdHeight
+       
+    def browserFrame(self):
+        url = 'http://localhost:3000/d/evJbqpTWk/new-dashboard-copy?orgId=1&kiosk'
+        self.meter = wp.WebPage(self.window,'10;10','700;960',os.getcwd(),url)
+
+    #decode position and size strings
+    def decodePos(self,position):
+        x = int(position.rsplit(";")[0])
+        y = int(position.rsplit(";")[1])
+        return x,y
 
     #define window size and centered
     def setWindow(self):
         self.widgetElements = dict()
-        x_size = self.window.winfo_screenwidth() // 2
-        y_size = self.window.winfo_screenheight() // 2
+        x_size = self.wdWidth // 2
+        y_size = self.wdHeight // 2
 
-        windowPosition = str(x_size) + "x" + str(y_size) + "+" + str(x_size//2) + "+" + str(y_size//2)
+        windowPosition = str(x_size) + "x" + str(700) #+ "+" + str(x_size//2) + "+" + str(y_size//2)
         self.window.geometry(windowPosition)
     
     #destroy the broker started with the object    
     def close(self):
         self.stopBroker(False)
-        del self.wp
+        self.meter.close()
+        del self.meter
         del self.window
 
     #run the window
@@ -52,56 +79,58 @@ class Window:
     def addBtn(self, position, txtBtn, callback):
         btn = Button(self.window,
                  text = txtBtn, command = callback, 
-                 bg = self.bg,
-                 fg = 'white',
-                 relief = RAISED,
+                 bg = 'white',
+                 fg = self.bg,
+                 relief = SOLID,
                  font=(self.font))
 
-        x = int(position.rsplit(";")[0])
-        y = int(position.rsplit(";")[1])
+        x, y = self.decodePos(position)
         btn.place(x=x, y=y)
         self.addElement(btn, txtBtn)
+    
+    def putSeparatorH(self,position):
+        x,y = self.decodePos(position)
+        separator = ttk.Separator(self.window, orient=HORIZONTAL)
+        separator.place(x=x,y=y,relwidth=350)
+    
+    def putSeparatorV(self,position):
+        x,y = self.decodePos(position)
+        separator = ttk.Separator(self.window, orient=VERTICAL)
+        separator.place(x=x,y=y,relheight=360)
 
-    def addTxt(self, position, title, size):
-        height = int(size.rsplit(";")[0])
-        width = int(size.rsplit(";")[1])
-        x = int(position.rsplit(";")[0])
-        y = int(position.rsplit(";")[1])
+    def addTxt(self, position, width, title,defaultTxt):
+        x,y = self.decodePos(position)
 
-        #txt = scrolledtext.ScrolledText(self.window, height=height, width=width, font = (self.font))
-        frame = Frame(self.window)
-        frame.place(x=x, y=y)
-        #txt.insert(END, "")
-        self.addElement(frame, title)
+        txt = Entry(self.window,
+                relief=SOLID, 
+                font = (self.font + ' italic'),
+                bg='grey',
+                fg='white',
+                width=width,
+                textvariable = StringVar()
+                )
+        
+        txt.focus_set()
+        txt.configure(insertbackground = 'white')
+
+        txt.place(x=x,y=y)
+        #clean txt
+        txt.delete(0,END)
+        #default value
+        txt.insert(0, defaultTxt)      
+        self.addElement(txt, title)
     
     def addLabel(self, position, name, defautlText):
-        x = int(position.rsplit(";")[0])
-        y = int(position.rsplit(";")[1])
+        x,y = self.decodePos(position)
 
         label = Label(self.window, 
             text = defautlText, 
             bg = self.bg, 
-            fg = 'green',
-            font = ('Verdana 50 bold'))
+            fg = 'white',
+            font = self.font)
 
         label.place(x = x, y = y)
         self.addElement(label,name)
-
-    def addFrame(self, position, size, name):
-        x = int(position.rsplit(";")[0])
-        y = int(position.rsplit(";")[1])
-        h = int(size.rsplit(";")[0])
-        w = int(size.rsplit(";")[1])
-
-        frame = Frame(self.window, bg = self.bg, height = h, width = h)
-
-        browser = BrowserFrame(frame,position, size, name)
-
-        browser.grid(row=1, column=0,
-                                sticky=(tk.N + tk.S + tk.E + tk.W))
-        frame.place(x = x, y = y)
-        
-        self.addElement(frame,name)
 
     #add element to window
     def addElement(self, element, name):
@@ -129,3 +158,9 @@ class Window:
         for proc in psutil.process_iter():
             if proc.name() == procname1 or proc.name() == procname2:
                 proc.kill()
+
+        for proc in psutil.process_iter():
+            if proc.name() == procname1 or proc.name() == procname2:
+                proc.kill()
+
+    
