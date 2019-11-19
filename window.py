@@ -10,9 +10,6 @@ import webPage as wp
 
 class Window:
     def __init__(self, icon, title):
-        #destroy any mqtt broker if exists
-        self.stopBroker(True)
-
         self.meter = None
         self.proc = None
 
@@ -34,9 +31,6 @@ class Window:
         self.setWindow()
 
         self.actualDir = os.getcwd() + "\\mosquitto\\mosquitto\\"
-        
-        #start a new mqtt broker
-        self.runBroker()
     
     def getWindowSize(self):
         return self.wdWidth, self.wdHeight
@@ -62,7 +56,6 @@ class Window:
     
     #destroy the broker started with the object    
     def close(self):
-        self.stopBroker(False)
         self.meter.close()
         del self.meter
         del self.window
@@ -142,25 +135,5 @@ class Window:
             return self.widgetElements.get(element)
         else:
             raise Exception("O elemento " + element + " não foi adicionado!")
-    
-    #start the mqtt broker on localhost, 1883 port 
-    def runBroker(self):
-        command = ["cd", self.actualDir, "&", "mosquitto", "-v"]
-        self.proc = subprocess.Popen(command, shell=True,
-             stdin=None, stdout=None, stderr=None, close_fds=True)
-    
-    #kill any process running a mqtt broker
-    def stopBroker(self,starting):
-        if not starting:
-            self.proc.kill()
-        procname1 = 'mosquitto.exe'
-        procname2 = 'subprocess.exe'
-        for proc in psutil.process_iter():
-            if proc.name() == procname1 or proc.name() == procname2:
-                proc.kill()
-
-        for proc in psutil.process_iter():
-            if proc.name() == procname1 or proc.name() == procname2:
-                proc.kill()
 
     

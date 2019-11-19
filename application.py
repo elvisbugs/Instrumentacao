@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import window as wd
-import listenMQTT as mqtt
+import listenUdp as udp
 
 import webbrowser
 
@@ -13,12 +13,12 @@ window.browserFrame()
 
 window.addBtn("830;660", "Open Grafana", grafanaBtn)
 
-subscriber = mqtt.MqttClient()
-subscriber.start()
+listener = udp.UdpClient()
+listener.start()
 
 window.exec()
 window.close()
-subscriber.close()
+listener.close()
 
-del subscriber
+del listener
 del window

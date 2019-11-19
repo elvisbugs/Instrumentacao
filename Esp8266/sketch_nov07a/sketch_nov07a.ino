@@ -1,18 +1,16 @@
 #include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 #include <user_interface.h>
 #include <PubSubClient.h>
 #include <math.h>
-const String HOSTNAME  = "DeviceESP8266"; //NOME DO DEVICE, deverá ter um nome unico.
-const char * sub_topic = "MNPS"; //Topico onde o Device subscreve.
-const char * pub_topic = "Configs"; //Topico onde o Device publica.
-
+WiFiUDP udp;
 //PODE SER CONFIGURADO POR SERIAL
 String ssid = "Elvis";
 String password = "angaroth";
-String MQTT_SERVER = "192.168.0.103"; //IP ou DNS do Broker MQTT
+String ip = "192.168.0.103"; //IP ou DNS do Broker MQTT
 
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
@@ -23,50 +21,16 @@ double Vrms = 0;
 int h = 0,m = 0,s = 0;
 double sAdjusted = 0;
 
-String dataReceveid;
 int timeWifiOff = 0;
 String wifiState = "WiFi Off!";
-
-String mqttMsg;
-
-WiFiClient wclient;
-PubSubClient client(MQTT_SERVER.c_str(), 1883, wclient);
 
 void setup() {
   Serial.begin(9600);
   setupDisplay();
   setupWifi();
-  client.setCallback(mqtt_callback);
-}
-
-void checkMqttConnection() {
-  if (!client.connected()) {
-    client.setServer(MQTT_SERVER.c_str(), 1883);
-    if (client.connect(HOSTNAME.c_str())) {
-      client.subscribe(sub_topic);
-    }
-  }
-  else{
-    client.loop();
-    char data[20];
-    sprintf(data,"%f",Vrms);
-    client.publish(sub_topic, data);
-  }
-}
-
-void mqtt_callback(char* topic, byte* payload, unsigned int length) 
-{
-    String msg = "";
- 
-    for(int i = 0; i < length; i++) 
-    {
-       msg += (char)payload[i];
-    }
-    mqttMsg = msg;
 }
 
 void setupWifi(){
-  WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid.c_str(),password.c_str());
   int count = 0;
   while (WiFi.status() != WL_CONNECTED) 
@@ -79,11 +43,19 @@ void setupWifi(){
      count++;
   }
   wifiState="WiFi On!";
+  Serial.begin(9600);
+  Serial.println(WiFi.localIP());
 }
 
 void reconectWifi(){  
   if(WiFi.status() == WL_CONNECTED)
+  {
+                    //ip, porta udp para enviar
+    udp.beginPacket(ip.c_str(), 4242);
+    udp.print(Vrms);//adiciona o dado ao pacote
+    udp.endPacket();//envia
     return;
+  }
 
   if(!(WiFi.status() == WL_CONNECTED))
   {
@@ -98,7 +70,6 @@ void reconectWifi(){
       timeWifiOff = 0;
       int count = 0;
       
-      WiFi.mode(WIFI_AP_STA);
       WiFi.begin(ssid.c_str(),password.c_str());
       while (WiFi.status() != WL_CONNECTED) 
       {
@@ -206,6 +177,4 @@ void loop(){
   voltageMeasure();
   showOnDisplay();
   reconectWifi();
-  if(WiFi.status() == WL_CONNECTED)
-    checkMqttConnection();
 }
