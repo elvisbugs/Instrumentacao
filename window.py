@@ -36,7 +36,7 @@ class Window:
         return self.wdWidth, self.wdHeight
        
     def browserFrame(self):
-        url = 'http://localhost:3000/d/evJbqpTWk/new-dashboard-copy?orgId=1&kiosk'
+        url = 'http://localhost:3000/d/w4UNZzxZk/application?orgId=1&refresh=1s&kiosk'
         self.meter = wp.WebPage(self.window,'10;10','700;960',os.getcwd(),url)
 
     #decode position and size strings
@@ -48,10 +48,8 @@ class Window:
     #define window size and centered
     def setWindow(self):
         self.widgetElements = dict()
-        x_size = self.wdWidth // 2
-        y_size = self.wdHeight // 2
 
-        windowPosition = str(x_size) + "x" + str(700) #+ "+" + str(x_size//2) + "+" + str(y_size//2)
+        windowPosition = str(950) + "x" + str(690) #+ "+" + str(x_size//2) + "+" + str(y_size//2)
         self.window.geometry(windowPosition)
     
     #destroy the broker started with the object    
