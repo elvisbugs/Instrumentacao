@@ -15,11 +15,13 @@ String ip = "192.168.1.101"; //IP ou DNS do Broker MQTT
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
 
-double instantMeasure = 0;
-
 double dB = 0;
 int h = 0,m = 0,s = 0;
 double sAdjusted = 0;
+
+double maxVal = 0;
+double instantMeasure = 0;
+double y = 0;
 
 int timeWifiOff = 0;
 String wifiState = "WiFi Off!";
@@ -92,36 +94,43 @@ void reconectWifi(){
 }
 
 void voltageMeasure(){
-  double maxVal = 0;
+  maxVal = 0;
+  instantMeasure = 0;
   for(int i=0; i < 1500; i++)
   {
     instantMeasure = (analogRead(A0)*3.3/1023)-1.68;
     instantMeasure = sqrt(pow(instantMeasure,2)); 
-    if(instantMeasure > dB)
+    if(instantMeasure > maxVal)
       maxVal = instantMeasure;  
     delayMicroseconds(500);
   }
-  double y = 13.904*log(dB) + 92.459;
+  y = ((13.904*log(maxVal)) + 92.459);
+  if(maxVal <= 0.0361){
+    maxVal = 0.0361;
+  }
+  if(maxVal >= 1.1100){
+    maxVal = 1.1100;
+  }
   if(maxVal <= 0.0490){
-    dB = (-0.45*y + 0.081777)/0.0129;
+    dB = y - ((-0.45*maxVal + 0.081777)/0.0129);
   }
   else if(maxVal <= 0.0619){
-    dB = (-0.66*y + 0.055926)/0.0096;
+    dB = y - ((-0.66*maxVal + 0.055926)/0.0096);
   }
   else if(maxVal <= 0.0748){
-    dB = (-1.79*y + 0.107108)/0.0096;
+    dB = y - ((-1.79*maxVal + 0.107108)/0.0096);
   }
   else if(maxVal <= 0.1232){
-    dB = (-0.29*y - 0.104664)/0.0322;
+    dB = y - ((-0.29*maxVal - 0.104664)/0.0322);
   }
   else if(maxVal <= 0.2587){
-    dB = (1.72*y - 0.681156)/0.00968;
+    dB = y - ((1.72*maxVal - 0.681156)/0.00968);
   }
   else if(maxVal <= 0.5490){
-    dB = (1.72*y - 0.997564)/0.1903;
+    dB = y - ((1.72*maxVal - 0.997564)/0.1903);
   }
   else{
-    dB = (1.25*y - 0.151377)/0.2803;
+    dB = y - ((1.25*maxVal - 0.151377)/0.2803);
   }
 }
 
