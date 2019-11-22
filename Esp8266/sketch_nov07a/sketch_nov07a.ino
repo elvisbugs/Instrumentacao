@@ -10,14 +10,14 @@ WiFiUDP udp;
 //PODE SER CONFIGURADO POR SERIAL
 String ssid = "Elvis";
 String password = "angaroth";
-String ip = "192.168.0.103"; //IP ou DNS do Broker MQTT
+String ip = "192.168.1.101"; //IP ou DNS do Broker MQTT
 
 // Nokia 5110 LCD module connections (CLK, DIN, D/C, CS, RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(D4, D3, D2, D1, D0);
 
 double instantMeasure = 0;
 
-double Vrms = 0;
+double dB = 0;
 int h = 0,m = 0,s = 0;
 double sAdjusted = 0;
 
@@ -25,9 +25,9 @@ int timeWifiOff = 0;
 String wifiState = "WiFi Off!";
 
 void setup() {
-  Serial.begin(9600);
   setupDisplay();
   setupWifi();
+  Serial.begin(9600);
 }
 
 void setupWifi(){
@@ -52,7 +52,7 @@ void reconectWifi(){
   {
                     //ip, porta udp para enviar
     udp.beginPacket(ip.c_str(), 4242);
-    udp.print(Vrms);//adiciona o dado ao pacote
+    udp.print(dB);//adiciona o dado ao pacote
     udp.endPacket();//envia
     return;
   }
@@ -92,21 +92,42 @@ void reconectWifi(){
 }
 
 void voltageMeasure(){
-  Vrms = 0;
+  double maxVal = 0;
   for(int i=0; i < 1500; i++)
   {
-    instantMeasure = (analogRead(A0)*3.3/1023)-1.65;
+    instantMeasure = (analogRead(A0)*3.3/1023)-1.68;
     instantMeasure = sqrt(pow(instantMeasure,2)); 
-    if(instantMeasure > Vrms)
-      Vrms = instantMeasure;  
+    if(instantMeasure > dB)
+      maxVal = instantMeasure;  
     delayMicroseconds(500);
   }
-  Vrms = 15.812*log10(Vrms) + 91.981;
+  double y = 13.904*log(dB) + 92.459;
+  if(maxVal <= 0.0490){
+    dB = (-0.45*y + 0.081777)/0.0129;
+  }
+  else if(maxVal <= 0.0619){
+    dB = (-0.66*y + 0.055926)/0.0096;
+  }
+  else if(maxVal <= 0.0748){
+    dB = (-1.79*y + 0.107108)/0.0096;
+  }
+  else if(maxVal <= 0.1232){
+    dB = (-0.29*y - 0.104664)/0.0322;
+  }
+  else if(maxVal <= 0.2587){
+    dB = (1.72*y - 0.681156)/0.00968;
+  }
+  else if(maxVal <= 0.5490){
+    dB = (1.72*y - 0.997564)/0.1903;
+  }
+  else{
+    dB = (1.25*y - 0.151377)/0.2803;
+  }
 }
 
 void timer(){
   if(sAdjusted < 59)
-    sAdjusted += 1,0205450734;
+    sAdjusted += 1.0205450734;
   else
   {
     sAdjusted = 0;
@@ -142,7 +163,7 @@ void showOnDisplay(){
   display.fillRect(0, 33, 84, 48, 2);
   display.setCursor(10,20);
   display.setTextSize(1);
-  display.print(Vrms);
+  display.print(dB);
   display.print(" dB(A)");
   
   display.setTextColor(WHITE,BLACK);
