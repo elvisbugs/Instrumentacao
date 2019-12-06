@@ -8,7 +8,7 @@ class UdpClient(Thread):
         Thread.__init__(self)
         self.daemon = True
         self.objdb = DbConnector()
-        UDP_IP = "192.168.0.103"
+        UDP_IP = "192.168.1.101"
         UDP_PORT = 4242
 
         self.sock = socket.socket(socket.AF_INET, # Internet
