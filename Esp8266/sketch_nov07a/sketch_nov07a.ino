@@ -111,26 +111,45 @@ void voltageMeasure(){
   if(maxVal >= 1.1100){
     maxVal = 1.1100;
   }
-  if(maxVal <= 0.0490){
-    dB = y - ((-0.45*maxVal + 0.081777)/0.0129);
+  //error adjustment
+  if(maxVal <= 0.049){
+    dB = y - (-0.45 * maxVal + (0.081816)) / 0.0129);
+  }
+  else if(maxVal <= 0.0523){
+    dB = y - (-2.39 * maxVal + (0.132560)) / 0.0033);
   }
   else if(maxVal <= 0.0619){
-    dB = y - ((-0.66*maxVal + 0.055926)/0.0096);
+    dB = y - (-0.66 * maxVal + (0.055774)) / 0.0096);
+  }
+  else if(maxVal <= 0.0652){
+    dB = y - (-2.58 * maxVal + (0.164763)) / 0.0033);
   }
   else if(maxVal <= 0.0748){
-    dB = y - ((-1.79*maxVal + 0.107108)/0.0096);
+    dB = y - (-1.79 * maxVal + (0.107092)) / 0.0096);
+  }
+  else if(maxVal <= 0.091){
+    dB = y - (-1.27 * maxVal + (0.050060)) / 0.0162);
   }
   else if(maxVal <= 0.1232){
-    dB = y - ((-0.29*maxVal - 0.104664)/0.0322);
+    dB = y - (-0.29 * maxVal + (-0.104780)) / 0.0322);
+  }
+  else if(maxVal <= 0.1619){
+    dB = y - (0.20 * maxVal + (-0.192952)) / 0.0387);
   }
   else if(maxVal <= 0.2587){
-    dB = y - ((1.72*maxVal - 0.681156)/0.00968);
+    dB = y - (1.72 * maxVal + (-0.680341)) / 0.0968);
   }
-  else if(maxVal <= 0.5490){
-    dB = y - ((1.72*maxVal - 0.997564)/0.1903);
+  else if(maxVal <= 0.3587){
+    dB = y - (0.44 * maxVal + (-0.358929)) / 0.1000);
+  }
+  else if(maxVal <= 0.549){
+    dB = y - (1.72 * maxVal + (-0.996035)) / 0.1903);
+  }
+  else if(maxVal <= 0.8297){
+    dB = y - (3.44 * maxVal + (-1.967751)) / 0.2807);
   }
   else{
-    dB = y - ((1.25*maxVal - 0.151377)/0.2803);
+    dB = y - (1.25 * maxVal + (0.147825)) / -0.2803);
   }
 }
 
