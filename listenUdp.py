@@ -19,7 +19,6 @@ class UdpClient(Thread):
         self.objdb.exit()
         del self.objdb
 
-
     #execute linstener async
     def run(self):
         while True:
